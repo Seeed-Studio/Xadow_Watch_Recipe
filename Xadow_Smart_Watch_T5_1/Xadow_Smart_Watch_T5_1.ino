@@ -22,6 +22,8 @@
   
   Loovee @ 2014-10-15
   
+  2. Add VIBEN to enable vibration or disable vibration
+  Loovee @ 2014-10-31
   
   This demo need:
   1. Xadow - Main Board(32u4)
@@ -59,6 +61,7 @@
 
 #define VIBTIME         5                       // vibration on time, unit in seconds
 
+#define VIBEN           0                       // if vibration enable
 unsigned long timer_time_refresh;
 
 Acc_Adxl345 acc;
@@ -73,7 +76,7 @@ int __Gflg_vib   = 0;                           // __Gstate of vibration, 1 - on
 r_time timeSet = 
 {
     50,                 // second
-    59,                 // minute
+    55,                 // minute
     15,                 // hour
     3,                  // week
     27,                 // day
@@ -192,10 +195,9 @@ void setup()
     acc.begin();
     delay(3000);
     
-    Timer1.initialize(1000000); 
-    Timer1.attachInterrupt( timerIsr ); 
+    // Timer1.initialize(1000000); 
+    // Timer1.attachInterrupt( timerIsr ); 
     time_c.timeRefresh(0);
-
 
 }
 
@@ -241,8 +243,10 @@ bool isAwake()
  */
 void vibrate_init()
 {
+#if VIBEN
     DDRF |= 0x01;
     DDRB |= 0x04;//vibrator
+#endif
 }
 
 /*
@@ -252,6 +256,7 @@ void vibrate_init()
  */
 void vibrate(unsigned char OnOff)
 {
+#if VIBEN
     if(OnOff)
     {
         PORTB |= 0x04;
@@ -262,4 +267,5 @@ void vibrate(unsigned char OnOff)
         PORTB &=~ 0x04;
         PORTF &=~ 0x01;
     }
+#endif
 }

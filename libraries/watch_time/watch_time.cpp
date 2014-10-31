@@ -22,9 +22,14 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+
 #include "watch_time.h"
 #include "watch_ui.h"
 #include "font_watch.h"
+
+#define RTC_EN      1
+
+RTC rtc;
 
 static char NameMonth[12][4] = {
 
@@ -48,9 +53,16 @@ static char NameMonth[12][4] = {
  */
 void watch_time::init(r_time t)
 {
+#if RTC_EN
+    rtc.begin();
+    rtc.get(&time_now);
+    rtc.get(&time_buf);
+    flg_refresh = 1;
+#else
     memcpy(time_now.data, t.data, 7);
     memcpy(time_buf.data, t.data, 7);
     flg_refresh = 1;
+#endif
 }
 
 
@@ -68,8 +80,14 @@ void watch_time::clear()
  */
 void watch_time::timeSet(r_time t)                  // set time
 {
+#if RTC_EN
     memcpy(time_buf.data, time_now.data, 7);
     memcpy(time_now.data, t.data, 7);
+    rtc_ds1307_set_time(t);
+#else
+    memcpy(time_buf.data, time_now.data, 7);
+    memcpy(time_now.data, t.data, 7);
+#endif
 }
 
 
@@ -87,8 +105,15 @@ void watch_time::timeGet(r_time *t)                 // get time
  */
 bool watch_time::isWholeHour()
 {
+#if RTC_EN
+
+    timeUpdate();
+    if(time_now.minute == 0 && time_now.second == 0)return 1;
+    else return 0;
+#else
     if(time_now.minute == 0 && time_now.second < 3)return 1;
     return 0;
+#endif
 }
 
 /*
@@ -97,6 +122,7 @@ bool watch_time::isWholeHour()
 void watch_time::time_isr()
 {
 
+#if !RTC_EN
     memcpy(time_buf.data, time_now.data, 7);
     
     time_now.second++;
@@ -117,6 +143,7 @@ void watch_time::time_isr()
             }
         }
     }
+#endif
 }
 
 
@@ -128,11 +155,22 @@ void watch_time::time_isr()
  */
 void watch_time::timeUpdate()                       // update time to time_now & time_buf
 {
+
+#if RTC_EN
+    memcpy(time_buf.data, time_now.data, 7);
+    
+    rtc.get(&time_now);
+    
     if(time_now.minute != time_buf.minute)
     {
         flg_refresh = 1;
     }
-    
+#else
+    if(time_now.minute != time_buf.minute)
+    {
+        flg_refresh = 1;
+    }
+#endif
 }
 
 /*

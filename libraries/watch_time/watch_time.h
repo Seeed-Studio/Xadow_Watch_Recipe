@@ -25,8 +25,10 @@
 #define __WATCH_TIME_TIME_H__
 
 #include "OLED_128x64_Suli.h"
+#include "RTC_DS1307_Suli.h"
+#include "RTC_DS1307_Arduino.h"
 
-
+/*
 typedef struct __time{
 
     union
@@ -46,7 +48,7 @@ typedef struct __time{
     };
 
 } r_time;
-
+*/
 
 class watch_time{
 
