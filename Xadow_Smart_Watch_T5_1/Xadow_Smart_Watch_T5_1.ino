@@ -76,11 +76,11 @@ int __Gflg_vib   = 0;                           // __Gstate of vibration, 1 - on
 r_time timeSet = 
 {
     50,                 // second
-    55,                 // minute
-    15,                 // hour
-    3,                  // week
-    27,                 // day
-    5,                  // month
+    31,                 // minute
+    14,                 // hour
+    5,                  // week
+    32,                 // day
+    10,                  // month
     14,                 // year
 };
 
@@ -197,6 +197,9 @@ void setup()
     
     // Timer1.initialize(1000000); 
     // Timer1.attachInterrupt( timerIsr ); 
+    
+    
+    //time_c.timeSet(timeSet);
     time_c.timeRefresh(0);
 
 }
